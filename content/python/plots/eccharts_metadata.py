@@ -1,0 +1,1 @@
+plot_settings = ${eccharts_metadata}

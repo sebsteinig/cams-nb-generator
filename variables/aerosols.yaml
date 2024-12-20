@@ -1,0 +1,40 @@
+name: "aerosols"
+layer: "composition_aod550"
+sections:
+  - name: "# Visualising CAMS Aerosol Forecasts"
+    cells:
+      - markdown/overview.md
+
+  - name: "## environment setup"
+    cells:
+      - markdown/conda_setup.md
+      - "#### import packages"
+      - python/setup/imports.py
+      - "#### user settings"
+      - python/setup/user_settings.py
+
+  - name: "## data download"
+    cells:
+      - markdown/cds_api.md
+      - python/download/ads_api_install.py
+      - python/download/ads_api_download.py:
+          variable: "total_aerosol_optical_depth_550nm"
+      
+  - name: "## processing"
+    cells:
+      - "let's do some processing"
+      - python/processing/regrid.py
+      - python/processing/time_average.py
+      
+  - name: "## visualisation"
+    cells:
+      - python/plots/eccharts_metadata.py
+      - python/plots/global_map.py
+      - python/plots/zonal_mean.py
+
+  - name: "## resources"
+    links:
+      - title: "CAMS Aerosol Documentation"
+        url: "https://atmosphere.copernicus.eu/aerosol"
+      - title: "earthkit Documentation"
+        url: "https://earthkit.readthedocs.io/" 

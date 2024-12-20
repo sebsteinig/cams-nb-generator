@@ -1,0 +1,4 @@
+nbformat
+pyyaml
+pymongo
+jinja2 
