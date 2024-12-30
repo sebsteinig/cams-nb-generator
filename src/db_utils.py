@@ -7,7 +7,7 @@ def _fetch_metadata(collection: str, name: str, tmp_dir: Path) -> dict:
     """Fetch metadata from ecCharts MongoDB for a given collection and name."""
     subprocess.run([
         'bash', '-c',
-        f'module load webdev && web-catalogue -s bol-test -c {collection} -d {tmp_dir} -a dump {name}'
+        f'module load webdev && web-catalogue -s bol-prod -c {collection} -d {tmp_dir} -a dump {name}'
     ])
     
     json_path = Path(tmp_dir) / collection / 'tmp' / f'{name}.json'

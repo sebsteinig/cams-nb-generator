@@ -1,7 +1,8 @@
 name: "aerosols"
 layer: "composition_aod550"
 
-# Add new pre_execution section
+# do some processing before the notebook generation
+# e.g. 
 pre_execution:
   - python/webcharts/download_cams_webchart.py:
       output_dir: "data/webcharts"
