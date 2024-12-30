@@ -85,3 +85,45 @@ class NotebookBlocks:
         cells.extend(self.create_cell_sequence(section_config['cells'], global_params))
         
         return cells
+
+    def execute_script(self, script_path, params=None):
+        """
+        Execute a Python script with given parameters before notebook generation.
+        
+        Parameters:
+        -----------
+        script_path : str
+            Path to the Python script to execute
+        params : dict, optional
+            Parameters to pass to the script
+        """
+        try:
+            path = Path(script_path)
+            script_found = False
+            
+            # Try both content and template directories
+            for base_dir in [self.content_dir, self.template_dir]:
+                full_path = base_dir / path
+                if full_path.exists():
+                    script_found = True
+                    script_path = full_path
+                    break
+                
+            if not script_found:
+                raise FileNotFoundError(f"Script not found: {script_path}")
+            
+            # Create a new namespace for script execution
+            namespace = {}
+            
+            # Add parameters to namespace if provided
+            if params:
+                namespace.update(params)
+            
+            # Read and execute the script
+            with open(script_path, 'r') as f:
+                script_content = f.read()
+                exec(script_content, namespace)
+            
+        except Exception as e:
+            print(f"Error executing script {script_path}: {str(e)}")
+            raise

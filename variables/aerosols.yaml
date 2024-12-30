@@ -1,9 +1,16 @@
 name: "aerosols"
 layer: "composition_aod550"
+
+# Add new pre_execution section
+pre_execution:
+  - python/webcharts/download_cams_webchart.py:
+      output_dir: "data/webcharts"
+
 sections:
   - name: "# Visualising CAMS Aerosol Forecasts"
     cells:
       - markdown/overview.md
+      - markdown/show_cams_webchart.md
 
   - name: "## environment setup"
     cells:
@@ -29,8 +36,10 @@ sections:
   - name: "## visualisation"
     cells:
       - python/plots/eccharts_metadata.py
-      - python/plots/global_map.py
-      - python/plots/zonal_mean.py
+      - python/plots/contour_map.py:
+          domain: "global"
+      - python/plots/zonal_mean.py:
+          domain: "global"
 
   - name: "## resources"
     links:

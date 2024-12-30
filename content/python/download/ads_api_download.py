@@ -6,7 +6,7 @@ request = {
     'time': ['12:00'],
     'leadtime_hour': ['0'],
     'type': ['forecast'],
-    'data_format': 'netcdf_zip',
+    'data_format': 'netcdf4',
 }
 
 client = cdsapi.Client(url=URL, key=KEY)

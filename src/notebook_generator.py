@@ -19,6 +19,19 @@ class NotebookGenerator:
         # Get ecCharts metadata
         eccharts_metadata = get_variable_metadata(global_params['layer_name'])
         
+        # Execute pre-execution scripts if they exist
+        if 'pre_execution' in config:
+            for script in config['pre_execution']:
+                if isinstance(script, dict):
+                    script_path = list(script.keys())[0]
+                    params = list(script.values())[0]
+                else:
+                    script_path = script
+                    params = {}
+
+                print(f"Executing script: {script_path} with params: {params}")
+                self.blocks.execute_script(script_path, params)
+        
         # Add cells based on configuration
         for section in config['sections']:
             if 'cells' in section:
