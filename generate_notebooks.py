@@ -2,15 +2,16 @@ import yaml
 from pathlib import Path
 import argparse
 from src.notebook_generator import NotebookGenerator
+from src.db_utils import get_enabled_variables
 
-def load_variable_config(variable_file):
-    """Load configuration for a single variable."""
-    with open(variable_file, 'r') as f:
+def load_master_config(config_file):
+    """Load master configuration file."""
+    with open(config_file, 'r') as f:
         return yaml.safe_load(f)
 
 def main():
     parser = argparse.ArgumentParser(description='Generate CAMS visualization notebooks')
-    parser.add_argument('--variables', nargs='*', help='Specific variables to process')
+    parser.add_argument('config', help='Path to master configuration YAML file')
     args = parser.parse_args()
     
     # Create output directory
@@ -20,23 +21,37 @@ def main():
     # Initialize notebook generator
     generator = NotebookGenerator(output_dir=output_dir)
     
-    # Get list of variable files to process
-    variables_dir = Path('variables')
-    if args.variables:
-        variable_files = [variables_dir / f"{var}.yaml" for var in args.variables]
-    else:
-        variable_files = list(variables_dir.glob('*.yaml'))
+    # Load master config
+    master_config = load_master_config(args.config)
+    product = master_config.get('product')
+    if not product:
+        raise ValueError("Master config must specify a 'product' field")
     
-    # Generate notebooks
-    for var_file in variable_files:
-        if not var_file.exists():
-            print(f"Warning: Configuration file {var_file} not found")
-            continue
-            
-        variable_id = var_file.stem
-        config = load_variable_config(var_file)
-        print(f"Generating notebook for {variable_id}...")
-        generator.generate_notebook(variable_id, config)
+    # Get all enabled variables for the product
+    variables = get_enabled_variables(product)
+    
+    # Generate notebooks for each enabled variable
+    for var_data in variables:
+        layer_name = var_data['layers'][1]['values']['layer_name']
+        description = var_data.get('description', '').replace(' ', '_')
+        print(f"Generating notebook for layer {layer_name}...")
+        print(f"Description: {description}")
+        # Create config for this variable by combining master config with variable-specific data
+        var_config = master_config.copy()
+        var_config['layer'] = layer_name
+        var_config['name'] = description
+        
+        # Update any variable-specific parameters
+        if 'params' not in var_config:
+            var_config['params'] = {}
+        var_config['params'].update({
+            'title': var_data.get('title', ''),
+            'description': var_data.get('description', ''),
+            'variable': layer_name
+        })
+        
+        # Generate the notebook
+        generator.generate_notebook(layer_name, var_config)
 
 if __name__ == '__main__':
     main() 

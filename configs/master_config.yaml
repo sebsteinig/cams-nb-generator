@@ -1,0 +1,53 @@
+# Product to generate notebooks for
+product: "cams"
+
+# Common parameters that will be available to all notebooks
+params:
+  domain: "global"
+
+# Pre-execution scripts to run before notebook generation
+pre_execution:
+  - python/webcharts/download_cams_webchart.py:
+      output_dir: "data/webcharts"
+
+sections:
+  - name: "# Visualising CAMS ${title}"
+    cells:
+      - markdown/overview.md
+      - markdown/show_cams_webchart.md
+
+  - name: "## environment setup"
+    cells:
+      - markdown/conda_setup.md
+      - "#### import packages"
+      - python/setup/imports.py
+      - "#### user settings"
+      - python/setup/user_settings.py
+
+  - name: "## data download"
+    cells:
+      - markdown/cds_api.md
+      - python/download/ads_api_install.py
+      - python/download/ads_api_download.py:
+          variable: "${variable}"
+      
+  - name: "## processing"
+    cells:
+      - "let's do some processing"
+      - python/processing/regrid.py
+      - python/processing/time_average.py
+      
+  - name: "## visualisation"
+    cells:
+      - python/plots/eccharts_metadata.py
+      - python/plots/contour_map.py:
+          domain: "${domain}"
+      - python/plots/zonal_mean.py:
+          domain: "${domain}"
+
+  - name: "## resources"
+    links:
+      - title: "CAMS Documentation"
+        url: "https://atmosphere.copernicus.eu/"
+      - title: "earthkit Documentation"
+        url: "https://earthkit.readthedocs.io/" 
